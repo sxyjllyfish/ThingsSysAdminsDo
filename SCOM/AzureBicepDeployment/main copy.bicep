@@ -22,6 +22,7 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2024-03-01' = {
   name: resourceGroupName
 }
 
+
 module vnetModule './network.bicep' = {
   name: 'VnetDeployment'
   scope: resourceGroup
@@ -35,58 +36,57 @@ module vnetModule './network.bicep' = {
     subnet2Prefix: subnet2Prefix
     bastionName: bastionName
     bastionSubnetPrefix: bastionSubnetPrefix
-
   }
 }
 
 //Virtual Machines
-module vmDomainController './virtualmachine.bicep' = {
+module vmModule './virtualmachine.bicep' = {
   name: 'DomainController'
   scope: resourceGroup
   params: {
     adminUsername: vmAdminUsername
     adminPassword: vmAdminPassword
-    vmSize: 'Standard_B2S'
+    vmSize: 'Standard_B2s'
     vmName: 'NPEWINSDC01'
     vmSubnetIds: [resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'SN-DOMAIN')]
     vmImagePublisher: 'MicrosoftWindowsServer'
     vmImageoffer: 'WindowsServer'
     vmImageSku: '2022-Datacenter'
     vmImageVersion: 'latest'
-    location:location
+    location: location
   }
 }
 
-module vmCertificatAuthority './virtualmachine.bicep' = {
-  name: 'CertificateAuthority'
-  scope: resourceGroup
-  params: {
-    adminUsername: vmAdminUsername
-    adminPassword: vmAdminPassword
-    vmSize: 'Standard_B2S'
-    vmName: 'NPEWINSCA01'
-    vmSubnetIds: [resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'SN-DOMAIN')]
-    vmImagePublisher: 'MicrosoftWindowsServer'
-    vmImageoffer: 'WindowsServer'
-    vmImageSku: '2022-Datacenter'
-    vmImageVersion: 'latest'
-    location:location
-  }
-}
+//module vmCertificatAuthority './virtualmachine.bicep' = {
+//  name: 'CertificateAuthority'
+//  scope: resourceGroup
+//  params: {
+//    adminUsername: vmAdminUsername
+//    adminPassword: vmAdminPassword
+//    vmSize: 'Standard_B2S'
+//    vmName: 'NPEWINSCA01'
+//    vmSubnetIds: [resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'SN-DOMAIN')]
+//    vmImagePublisher: 'MicrosoftWindowsServer'
+//    vmImageoffer: 'WindowsServer'
+//    vmImageSku: '2022-Datacenter'
+//    vmImageVersion: 'latest'
+//    location: location
+//  }
+//}
 
-module vmScomManagementServer './virtualmachine.bicep' = {
-  name: 'ScomManagementServer'
-  scope: resourceGroup
-  params: {
-    adminUsername: vmAdminUsername
-    adminPassword: vmAdminPassword
-    vmSize: 'Standard_B2S'
-    vmName: 'NPEWINSCA01'
-    vmSubnetIds: [resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'SN-SCOM')]
-    vmImagePublisher: 'MicrosoftWindowsServer'
-    vmImageoffer: 'WindowsServer'
-    vmImageSku: '2022-Datacenter'
-    vmImageVersion: 'latest'
-    location:location
-  }
-}
+//module vmScomManagementServer './virtualmachine.bicep' = {
+//  name: 'ScomManagementServer'
+//  scope: resourceGroup
+//  params: {
+//    adminUsername: vmAdminUsername
+//   adminPassword: vmAdminPassword
+//    vmSize: 'Standard_B2S'
+//    vmName: 'NPEWINSCA01'
+//    vmSubnetIds: [resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'SN-SCOM')]
+//    vmImagePublisher: 'MicrosoftWindowsServer'
+//    vmImageoffer: 'WindowsServer'
+//    vmImageSku: '2022-Datacenter'
+//    vmImageVersion: 'latest'
+//    location: location
+//  }
+//}
