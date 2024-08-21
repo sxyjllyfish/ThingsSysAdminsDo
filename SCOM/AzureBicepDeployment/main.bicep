@@ -1,92 +1,29 @@
-// =========== main.bicep ===========
-targetScope = 'subscription'
+@description('The location where the resources will be deployed')
+param location string = resourceGroup().location
 
-//param subscriptionId string
-param location string = 'AustraliaSouthEast'
-param resourceGroupName string = 'RG-AUS-SCOM'
-param vnetName string = 'VNET-SCOM-TEST'
-param addressPrefix string = '10.50.0.0/16'
-param subnet1Name string = 'SN-DOMAIN'
-param subnet1Prefix string = '10.50.1.0/24'
-param subnet2Name string = 'SN-SCOM'
-param subnet2Prefix string = '10.50.2.0/24'
-param bastionName string = 'myBastion'
-param bastionSubnetPrefix string = '10.50.3.0/27'
-param vmAdminUsername string = 'InfraOps'
-param vmAdminPassword string = 'N@tsuDR@gn33l!F@1ryTail!'
+module ResourceGroup
 
-
-
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2024-03-01' = {
-  location: location
-  name: resourceGroupName
-}
-
-module vnetModule './network.bicep' = {
-  name: 'VnetDeployment'
-  scope: resourceGroup
+module vnetModule './vnet.bicep' = {
+  name: 'vnetDeployment'
   params: {
     location: location
-    vnetName: vnetName
-    addressPrefix: addressPrefix
-    subnet1Name: subnet1Name
-    subnet1Prefix: subnet1Prefix
-    subnet2Name: subnet2Name
-    subnet2Prefix: subnet2Prefix
-    bastionName: bastionName
-    bastionSubnetPrefix: bastionSubnetPrefix
-
+    vnetName: 'VNET-Test'
+    vnetAddressPrefix: '10.100.0.0/24'
+    subnetName: 'SN-TEST'
+    subnetAddressPrefix: '10.100.0.64/26'
   }
 }
 
-//Virtual Machines
-module vmDomainController './virtualmachine.bicep' = {
-  name: 'DomainController'
-  scope: resourceGroup
+module vmModule './vm.bicep' = {
+  name: 'vmDeployment'
   params: {
-    adminUsername: vmAdminUsername
-    adminPassword: vmAdminPassword
-    vmSize: 'Standard_B2S'
-    vmName: 'NPEWINSDC01'
-    vmSubnetIds: [resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'SN-DOMAIN')]
-    vmImagePublisher: 'MicrosoftWindowsServer'
-    vmImageoffer: 'WindowsServer'
-    vmImageSku: '2022-Datacenter'
-    vmImageVersion: 'latest'
-    location:location
-  }
-}
-
-module vmCertificatAuthority './virtualmachine.bicep' = {
-  name: 'CertificateAuthority'
-  scope: resourceGroup
-  params: {
-    adminUsername: vmAdminUsername
-    adminPassword: vmAdminPassword
-    vmSize: 'Standard_B2S'
-    vmName: 'NPEWINSCA01'
-    vmSubnetIds: [resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'SN-DOMAIN')]
-    vmImagePublisher: 'MicrosoftWindowsServer'
-    vmImageoffer: 'WindowsServer'
-    vmImageSku: '2022-Datacenter'
-    vmImageVersion: 'latest'
-    location:location
-  }
-}
-
-module vmScomManagementServer './virtualmachine.bicep' = {
-  name: 'ScomManagementServer'
-  scope: resourceGroup
-  params: {
-    adminUsername: vmAdminUsername
-    adminPassword: vmAdminPassword
-    vmSize: 'Standard_B2S'
-    vmName: 'NPEWINSCA01'
-    vmSubnetIds: [resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'SN-SCOM')]
-    vmImagePublisher: 'MicrosoftWindowsServer'
-    vmImageoffer: 'WindowsServer'
-    vmImageSku: '2022-Datacenter'
-    vmImageVersion: 'latest'
-    location:location
+    rgName: 'RG-AUS-SCOM'
+    vmName: 'myWinVM'
+    location: location
+    vmSize: 'Standard_D2s_v3'
+    adminUsername: 'azureuser'
+    adminPassword: 'YourPasswordHere!' // Replace with secure value
+    //vnetId: vnetModule.outputs.vnetId
+    subnetId: vnetModule.outputs.subnetId
   }
 }

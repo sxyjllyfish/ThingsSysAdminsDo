@@ -1,33 +1,24 @@
 @description('The name of the resource group')
-param rgName string = 'RG-AUS-SCOM'
+param rgName string 
 
 @description('The name of the virtual machine')
-param vmName string = 'NPEWINSDC01'
+param vmName string
 
 @description('The location where the resources will be deployed')
-param location string = 'australiasoutheast'
+param location string 
 
 @description('The size of the virtual machine')
-param vmSize string = 'Standard_D2s_v3'
+param vmSize string
 
 @description('The admin username for the VM')
-param adminUsername string = 'infraops'
+param adminUsername string 
 
 @description('The admin password for the VM')
 @secure()
-param adminPassword string = 'F@1ryTail!N@tsuDR@gn33l!'
+param adminPassword string
 
-@description('The name of the virtual network')
-param vnetName string = 'VNET-Test'
-
-@description('The address prefix for the virtual network')
-param vnetAddressPrefix string = '10.100.0.0/24'
-
-@description('The name of the subnet')
-param subnetName string = 'SN-TEST'
-
-@description('The address prefix for the subnet')
-param subnetAddressPrefix string = '10.100.0.64/26'
+@description('The ID of the existing subnet')
+param subnetId string
 
 @description('The OS disk type')
 param osDiskType string = 'Standard_LRS'
@@ -41,26 +32,6 @@ param nicName string = '${vmName}-nic'
 @description('The OS version')
 var windowsOSVersion = '2022-Datacenter-Core'
 
-resource vnet 'Microsoft.Network/virtualNetworks@2023-02-01' = {
-  name: vnetName
-  location: location
-  properties: {
-    addressSpace: {
-      addressPrefixes: [
-        vnetAddressPrefix
-      ]
-    }
-    subnets: [
-      {
-        name: subnetName
-        properties: {
-          addressPrefix: subnetAddressPrefix
-        }
-      }
-    ]
-  }
-}
-
 resource publicIP 'Microsoft.Network/publicIPAddresses@2023-02-01' = {
   name: publicIpName
   location: location
@@ -72,7 +43,7 @@ resource publicIP 'Microsoft.Network/publicIPAddresses@2023-02-01' = {
   }
 }
 
-resource nic 'Microsoft.Network/networkInterfaces@2024-01-01' = {
+resource nic 'Microsoft.Network/networkInterfaces@2023-02-01' = {
   name: nicName
   location: location
   properties: {
@@ -81,11 +52,8 @@ resource nic 'Microsoft.Network/networkInterfaces@2024-01-01' = {
         name: 'ipconfig1'
         properties: {
           privateIPAllocationMethod: 'Dynamic'
-          publicIPAddress: {
-            id: publicIP.id
-          }
           subnet: {
-            id: vnet.properties.subnets[0].id
+            id: subnetId
           }
         }
       }
@@ -93,7 +61,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2024-01-01' = {
   }
 }
 
-resource vm 'Microsoft.Compute/virtualMachines@2024-03-01' = {
+resource vm 'Microsoft.Compute/virtualMachines@2023-03-01' = {
   name: vmName
   location: location
   properties: {
