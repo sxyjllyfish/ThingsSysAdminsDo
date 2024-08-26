@@ -11,6 +11,6 @@ Install-ADDSForest `
     -InstallDns `
     -DomainMode Win2012R2 `
     -ForestMode Win2012R2 `
-    -LogPath "C:\ADDS\Logs"
-    -SysvolPath "C:\ADDS\SYSVOL"
+    -LogPath "C:\ADDS\Logs" `
+    -SysvolPath "C:\ADDS\SYSVOL" `
     -Force
