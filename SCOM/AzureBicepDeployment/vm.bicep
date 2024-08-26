@@ -1,6 +1,3 @@
-@description('The name of the resource group')
-param rgName string 
-
 @description('The name of the virtual machine')
 param vmName string
 
