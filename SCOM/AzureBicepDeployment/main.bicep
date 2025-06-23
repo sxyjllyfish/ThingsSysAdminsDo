@@ -52,7 +52,7 @@ module scomsubnet 'subnet.bicep' = {
 module bastionSubnet 'subnet.bicep' = {
   name:'BastionSubnet'
   params: {
-    subnetName:'SN-Bastion'
+    subnetName:'AzureBastionSubnet'
     subnetPrefix:'10.100.0.0/26'
     vnetName:'VNET-Test'
   }
@@ -109,7 +109,7 @@ module DcModule './vm.bicep' = {
 module AddsModule './customScriptExtension.bicep' = {
   name: 'AddsDeployment'
   params: {
-    fileUri: 'https://samorotech.blob.core.windows.net/deploymentscripts/Test/Test-Script.ps1'
+    fileUri: 'https://raw.githubusercontent.com/sxyjllyfish/ThingsSysAdminsDo/main/Test-Script.ps1'
     fileName: 'Test-Script.ps1'
     location: location
     vmName: 'NPEWINSDC01'
